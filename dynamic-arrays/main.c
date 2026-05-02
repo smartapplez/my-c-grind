@@ -1,6 +1,7 @@
 #include "dynamic-arrays.h"
+#include <assert.h>
 #include <stdio.h>
-#include <threads.h>
+#include <stdlib.h>
 
 void print_vector(c_vector *v) {
   for (int i = 0; i < v->size; i++) {
@@ -11,7 +12,7 @@ void print_vector(c_vector *v) {
   }
 }
 
-int main() {
+inline void test_c_vector_no_opaque() {
   c_vector test_vector;
   vector_init(&test_vector, INT);
 
@@ -43,5 +44,9 @@ int main() {
     printf("Out of Bounds Access: test_vector[%d] = %ld\n", 10, *illegal);
 
   vector_free(&test_vector);
+}
+
+int main() {
+  test_c_vector_no_opaque();
   return 0;
 }
