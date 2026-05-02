@@ -1,10 +1,12 @@
 # Compiler settings
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -g -O0
+
+DEBUG_FLAGS = -O0 -DDEBUG
 
 # Input/output files
-SRCS = dynamic-arrays.c main.c
-OBJS = dynamic-arrays.o main.o
+SRCS = dynamic-arrays-opaque.c main.c
+OBJS = dynamic-arrays-opaque.o main.o
 TARGET = main
 
 # Default target: build the executable
@@ -15,10 +17,10 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Compile each source file to an object file
-dynamic-arrays.o: dynamic-arrays.c dynamic-arrays.h
+dynamic-arrays-opaque.o: dynamic-arrays-opaque.c dynamic-arrays-opaque.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-main.o: main.c dynamic-arrays.h
+main.o: main.c dynamic-arrays-opaque.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Clean up build artifacts
@@ -28,3 +30,4 @@ clean:
 # Phony targets for convenience
 .PHONY: all clean
 
+# TODO: Add Debug Target for dynamic-arrays-opaque
