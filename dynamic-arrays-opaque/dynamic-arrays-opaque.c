@@ -236,11 +236,10 @@ int vector_reserve(c_vector_opaque *v, size_t new_capacity) {
     fprintf(stderr, "ERROR: vector_reserve(): vector data is NULL. Please "
                     "initialize first to initialize the metadata\n");
     return -1;
-  } else if (new_capacity == 0) {
-    puts("WARNING: vector_reserve(): capacity provided is 0. Freeing the "
-         "vector array");
-    vector_free(v->data);
-    return 0;
+  } else if (new_capacity < v->size) {
+    fprintf(stderr, "ERROR: vector_reserve(): new_capacity is less than "
+                    "size.\n");
+    return -1;
   }
 
   void *temp = realloc(v->data, v->elem_size * new_capacity);

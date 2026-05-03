@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// TODO: Add a test case for reserve that decreases array capacity.
+// Make sure that its size also reflects that to prevent heap OOB
+
 // void print_vector(c_vector *v) {
 // for (int i = 0; i < v->size; i++) {
 // int *int_pointer = vector_get(v, i);
@@ -56,9 +59,7 @@ static inline void test_c_vector_opaque() {
   assert(test_vector == NULL); // Should be NULL
 
   // All operations should return error codes on NULL input
-  puts("Testing vector_pushback():");
   assert(vector_pushback(test_vector, &test_int) == -1);
-  puts("Testing vector_get():");
   assert(vector_get(test_vector, 5) == NULL);
   assert(vector_free(test_vector) == -1);
   assert(vector_popback(test_vector) == -1);
@@ -129,6 +130,8 @@ static inline void test_c_vector_opaque() {
 
   puts("Pushback & Read Tests: PASSED\n");
 
+  // Tests generated from here on was by qwen 3.5 LLM
+  // More tests will follow later once I get to it
   // ==========================
   // 4. CAPACITY GROWTH TESTS
   // Ensure realloc happens when full
