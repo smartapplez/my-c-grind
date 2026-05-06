@@ -25,3 +25,5 @@ clean:
 	rm -f $(OBJS) $(TARGET)
 
 .PHONY: all clean
+
+#TODO: Add Debug flags so that I can see error logs and valgrind

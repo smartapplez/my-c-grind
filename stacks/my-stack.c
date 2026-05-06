@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Time taken to program stack without much help: 2:01:57
+
 #ifdef DEBUG
 #define ERROR_PRINT(fmt, ...)                                                  \
   fprintf(stderr, "\x1b[31m[ERROR]\x1b[0m [%s:%d] - " fmt "\n", __FILE__,      \
@@ -14,11 +16,11 @@
 // This is has a structure of a deque but we cannot move the head pointer
 struct c_stack {
   void *data;
+  void *top_ptr;
   size_t capacity;
   size_t size;
   size_t elem_size;
   stack_data_type data_type;
-  void *top_ptr;
 };
 
 c_stack *stack_init(stack_data_type data_type) {
