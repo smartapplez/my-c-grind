@@ -71,10 +71,11 @@ node *get_prev_node(node *node) {
 int free_node(node *node) {
   if (node == NULL) {
     ERROR_PRINT("Provided NULL to node argument");
-    return NULL;
+    return -1;
   }
   free(node);
   node = NULL;
+  return 0;
 }
 
 int cpy_from_node_data_buffer(node *node, void *data_out, size_t data_size) {

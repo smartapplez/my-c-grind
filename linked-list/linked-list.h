@@ -22,7 +22,8 @@ void *get_head_data(linked_list *list);
 void *get_tail_data(linked_list *list);
 void *get_data_at(linked_list *list, size_t index);
 size_t get_data_size(linked_list *list);
+size_t get_list_size(linked_list *list);
 
-void display(linked_list *list);
+void display_linked_list(linked_list *list);
 
 #endif // !LINKED_LIST

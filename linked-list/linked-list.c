@@ -1,6 +1,9 @@
 #include "linked-list.h"
 #include "node.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 
 #ifdef DEBUG
 #define ERROR_PRINT(fmt, ...)                                                  \
@@ -87,6 +90,7 @@ int pop_back(linked_list *list) {
   set_next_node(new_tail, NULL);
   free_node(list->tail);
   list->tail = new_tail;
+  list->head = (list->tail != NULL) ? list->head : NULL;
   list->list_size--;
   return 0;
 }
@@ -103,6 +107,7 @@ int pop_front(linked_list *list) {
   set_prev_node(new_head, NULL);
   free_node(list->head);
   list->head = new_head;
+  list->tail = (list->head != NULL) ? list->tail : NULL;
   list->list_size--;
   return 0;
 }
@@ -126,7 +131,6 @@ int clear_list(linked_list *list) {
   } while (next_node != NULL);
   list->head = NULL;
   list->tail = NULL;
-  list->data_size = 0; // NOTE: Should I reset data_size?
   list->list_size = 0;
   return 0;
 }
@@ -188,4 +192,32 @@ void *get_data_at(linked_list *list, size_t index) {
 
 size_t get_data_size(linked_list *list) {
   return (list != NULL) ? list->data_size : 0;
+}
+
+size_t get_list_size(linked_list *list) {
+  return (list != NULL) ? list->list_size : 0;
+}
+
+// I have to idea how to adjust the display function for bigger buffer sizes
+// This is by no means reliable since in ints, they will result in uninitialised
+// values
+void display_linked_list(linked_list *list) {
+  if (list == NULL) {
+    ERROR_PRINT("Provided NULL to list argument");
+    return;
+  } else if (list->head == NULL) {
+    puts("List is empty...");
+    return;
+  }
+  node *cur_node = list->head;
+  puts("Linked List (in Quadword Hex):");
+
+  while (cur_node != NULL) {
+    u_int64_t quadword;
+    // Safest way in case bytes are not 8-bits
+    memcpy(&quadword, get_node_buffer(cur_node), sizeof(u_int64_t));
+    printf("%016llx ->\n", (unsigned long long)quadword);
+    cur_node = get_next_node(cur_node);
+  }
+  puts("NULL");
 }
