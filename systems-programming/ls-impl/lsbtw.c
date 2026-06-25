@@ -95,7 +95,8 @@ int main(int argc, char *argv[]) {
   // optind is external from unistd
   // We are checking if the path exists if there is another argument besides the
   // flags
-  const char *path = (argc < optind) ? argv[optind] : ".";
+  const char *path = (optind < argc) ? argv[optind] : ".";
+  printf("path: %s\n", path);
 
   DIR *dir = opendir(path);
   if (!dir) {
