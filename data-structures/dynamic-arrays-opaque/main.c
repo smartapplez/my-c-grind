@@ -59,27 +59,24 @@ static inline void test_c_vector_opaque() {
   assert(test_vector == NULL); // Should be NULL
 
   // All operations should return error codes on NULL input
-  assert(vector_pushback(test_vector, &test_int) == -1);
+  assert(vector_pushback(test_vector, &test_int) == E_NULL_ARG);
   assert(vector_get(test_vector, 5) == NULL);
-  assert(vector_free(test_vector) == -1);
-  assert(vector_popback(test_vector) == -1);
-  assert(vector_clear(test_vector) == -1);
-  assert(vector_set(test_vector, 5, &test_int) == -1);
-  assert(vector_reserve(test_vector, 10) == -1);
+  assert(vector_free(test_vector) == E_NULL_ARG);
+  assert(vector_popback(test_vector) == E_NULL_ARG);
+  assert(vector_clear(test_vector) == E_NULL_ARG);
+  assert(vector_set(test_vector, 5, &test_int) == E_NULL_ARG);
+  assert(vector_reserve(test_vector, 10) == E_NULL_ARG);
 
   // Getters should return safe default values (0 or NONE) w/o crashing on NULL
   assert(vector_get_size(test_vector) == 0);
   assert(vector_get_capacity(test_vector) == 0);
   assert(vector_get_elem_size(test_vector) == 0);
-  assert(vector_get_data_type(test_vector) == NONE);
   puts("Testing print vector():");
-  print_vector(test_vector);
   puts("NULL pointer safety checks PASSED \n");
   /////////////////////////
 
   /////////////////////////
   // Initialization Test: NONE type testing
-  test_vector = vector_init(NONE);
   puts("NONE type test_vector test:");
   assert(vector_pushback(test_vector, &test_int) == -1);
   assert(vector_get(test_vector, 5) == NULL);
@@ -91,9 +88,7 @@ static inline void test_c_vector_opaque() {
   assert(vector_get_size(test_vector) == 0);
   assert(vector_get_capacity(test_vector) == 0);
   assert(vector_get_elem_size(test_vector) == 0);
-  assert(vector_get_data_type(test_vector) == NONE);
   puts("Testing print vector():");
-  print_vector(test_vector);
   puts("NONE type Unitialization PASSED\n");
 
   // Cleanup for NONE type (Don't free data, just free struct)
@@ -103,8 +98,7 @@ static inline void test_c_vector_opaque() {
 
   /////////////////////////
   // Init INT type
-  test_vector = vector_init(INT);
-  assert(vector_get_data_type(test_vector) == INT);
+  test_vector = vector_init(sizeof(int));
   assert(vector_get_capacity(test_vector) == DEFAULT_CAPACITY); // Should be 10
 
   vector_free(test_vector);
@@ -113,7 +107,7 @@ static inline void test_c_vector_opaque() {
   puts("Initialization Tests: PASSED\n");
 
   printf("--- Testing Pushback & Read ---\n");
-  test_vector = vector_init(INT);
+  test_vector = vector_init(sizeof(int));
   int value_to_push = 42;
 
   // Push one element (Size should be 1)
@@ -138,7 +132,7 @@ static inline void test_c_vector_opaque() {
   // ==========================
 
   printf("--- Testing Capacity Growth ---\n");
-  test_vector = vector_init(INT);
+  test_vector = vector_init(sizeof(int));
 
   // Push up to DEFAULT_CAPACITY (10 items)
   int val = 0;
@@ -165,7 +159,7 @@ static inline void test_c_vector_opaque() {
   // ==========================
 
   printf("--- Testing Popback & Clear ---\n");
-  test_vector = vector_init(INT);
+  test_vector = vector_init(sizeof(int));
 
   for (int i = 0; i < 5; i++) {
     vector_pushback(test_vector, &i);
@@ -209,7 +203,7 @@ static inline void test_c_vector_opaque() {
   // ==========================
 
   printf("--- Testing Out of Bounds Protection ---\n");
-  test_vector = vector_init(INT);
+  test_vector = vector_init(sizeof(int));
   int dummy;
 
   // Push a few elements
@@ -236,7 +230,7 @@ static inline void test_c_vector_opaque() {
   // ==========================
 
   printf("--- Testing Reserve ---\n");
-  test_vector = vector_init(INT); // Default 10 capacity
+  test_vector = vector_init(sizeof(int)); // Default 10 capacity
 
   assert(vector_reserve(test_vector, 50) == 0);
   assert(vector_get_capacity(test_vector) >= 50);
@@ -252,7 +246,7 @@ static inline void test_c_vector_opaque() {
   // ==========================
   printf("--- Final Cleanup Check ---\n");
 
-  test_vector = vector_init(INT);
+  test_vector = vector_init(sizeof(int));
   for (int i = 0; i < 3; i++)
     vector_pushback(test_vector, &i);
   vector_free(test_vector); // Frees the data buffer

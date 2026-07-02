@@ -3,17 +3,21 @@
 
 #include <stddef.h>
 
-#define DEFAULT_CAPACITY 10
+// Defining error codes
+#define E_NULL_ARG 258
+#define E_VEC_EMPTY 259
+#define E_VEC_DATA_NULL 260
+#define E_OUT_OF_BOUNDS 261
+#define E_REALLOC 262
 
-typedef enum { SIZE_T, INT, DOUBLE, NONE } data_type;
+#define DEFAULT_CAPACITY 10
 
 // Adding opaque structs to help with encapsulation
 // This forces me to add in return pointers instead of helper functions
 typedef struct c_vector_opaque c_vector_opaque;
 
-c_vector_opaque *vector_init_struct(size_t init_capacity, size_t elem_size,
-                                    data_type type);
-c_vector_opaque *vector_init(data_type type);
+c_vector_opaque *vector_init(size_t elem_size);
+c_vector_opaque *vector_init_struct(size_t init_capacity, size_t elem_size);
 
 int vector_pushback(c_vector_opaque *v, const void *element);
 void *vector_get(c_vector_opaque *v, size_t index);
@@ -26,6 +30,5 @@ int vector_reserve(c_vector_opaque *v, size_t new_capacity);
 size_t vector_get_size(c_vector_opaque *v);
 size_t vector_get_capacity(c_vector_opaque *v);
 size_t vector_get_elem_size(c_vector_opaque *v);
-data_type vector_get_data_type(c_vector_opaque *v);
-void print_vector(c_vector_opaque *v);
+// void print_vector(c_vector_opaque *v);
 #endif
