@@ -1,5 +1,7 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O0
+# CFLAGS = -Wall -Wextra -g -O2
+CFLAGS = -Wall -Wextra -g -O2
+# MAX_BUF_SIZE_FLAG = -DMAX_BUFFER_SIZE=8
 
 DEBUG_FLAGS = -O0 -DDEBUG
 

@@ -20,12 +20,17 @@ struct linked_list {
   size_t list_size;
 };
 
-linked_list *linked_list_init(size_t data_size) {
-  linked_list *init = malloc(sizeof(struct linked_list));
-  if (data_size > MAX_BUFFER_SIZE) {
-    ERROR_PRINT("data_size provided greather than MAX_BUFFER_SIZE");
+linked_list *linked_list_init(const size_t data_size) {
+  if (data_size == 0) {
+    ERROR_PRINT("data_size provided is zero");
     return NULL;
   }
+  linked_list *init = malloc(sizeof(struct linked_list));
+  if (init == NULL) {
+    ERROR_PRINT("error with malloc");
+    return NULL;
+  }
+
   init->head = NULL;
   init->tail = NULL;
   init->data_size = data_size;
@@ -33,13 +38,13 @@ linked_list *linked_list_init(size_t data_size) {
   return init;
 }
 
-int push_back(linked_list *list, void *data) {
+int push_back(linked_list *list, const void *data) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   } else if (data == NULL) {
     ERROR_PRINT("Provided NULL to data argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   }
 
   if (list->tail != NULL) {
@@ -52,16 +57,16 @@ int push_back(linked_list *list, void *data) {
     list->tail = list->head;
   }
   list->list_size++;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
-int push_front(linked_list *list, void *data) {
+int push_front(linked_list *list, const void *data) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   } else if (data == NULL) {
     ERROR_PRINT("Provided NULL to data argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   }
 
   // In the case of an empty list
@@ -75,85 +80,88 @@ int push_front(linked_list *list, void *data) {
     list->tail = list->head;
   }
   list->list_size++;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int pop_back(linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   } else if (list->tail == NULL) {
     ERROR_PRINT("list is already empty");
-    return -1;
+    return E_LIST_EMPTY;
   }
   node *new_tail = get_prev_node(list->tail);
-  set_next_node(new_tail, NULL);
-  free_node(list->tail);
+  if (new_tail != NULL)
+    set_next_node(new_tail, NULL);
+  free_node(&list->tail);
   list->tail = new_tail;
   list->head = (list->tail != NULL) ? list->head : NULL;
   list->list_size--;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int pop_front(linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   } else if (list->head == NULL) {
     ERROR_PRINT("list is already empty");
-    return -1;
+    return E_LIST_EMPTY;
   }
   node *new_head = get_next_node(list->head);
-  set_prev_node(new_head, NULL);
-  free_node(list->head);
+  if (new_head != NULL)
+    set_prev_node(new_head, NULL);
+  free_node(&list->head);
   list->head = new_head;
   list->tail = (list->head != NULL) ? list->tail : NULL;
   list->list_size--;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 int clear_list(linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
-    return -1;
+    return E_LIST_NULL_ARG;
   } else if (list->head == NULL && list->tail == NULL) {
     ERROR_PRINT("List is already empty");
-    return -1;
+    return E_LIST_EMPTY;
   }
 
-  node *cur_node = list->head;
-  node *next_node;
-
-  do {
-    next_node = get_next_node(cur_node);
-    free_node(cur_node);
-    cur_node = next_node;
-  } while (next_node != NULL);
-  list->head = NULL;
-  list->tail = NULL;
-  list->list_size = 0;
-  return 0;
-}
-
-int free_list(linked_list *list) {
-  if (list == NULL) {
-    ERROR_PRINT("Provided NULL to list argument");
-    return -1;
-  }
   node *cur_node = list->head;
   node *next_node;
 
   while (cur_node != NULL) {
     next_node = get_next_node(cur_node);
-    free_node(cur_node);
+    free_node(&cur_node);
     cur_node = next_node;
   }
-  free(list);
-  list = NULL;
-  return 0;
+
+  list->head = NULL;
+  list->tail = NULL;
+  list->list_size = 0;
+  return EXIT_SUCCESS;
 }
 
-void *get_head_data(linked_list *list) {
+int free_list(linked_list **list) {
+  if (list == NULL || (*list) == NULL) {
+    ERROR_PRINT("Provided NULL to list argument");
+    return E_LIST_NULL_ARG;
+  }
+  node *cur_node = (*list)->head;
+  node *next_node;
+
+  while (cur_node != NULL) {
+    next_node = get_next_node(cur_node);
+    free_node(&cur_node);
+    cur_node = next_node;
+  }
+  free((*list));
+  *list = NULL;
+  return EXIT_SUCCESS;
+}
+
+void *get_head_data(const linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
     return NULL;
@@ -164,7 +172,7 @@ void *get_head_data(linked_list *list) {
   return get_node_buffer(list->head);
 }
 
-void *get_tail_data(linked_list *list) {
+void *get_tail_data(const linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
     return NULL;
@@ -175,7 +183,7 @@ void *get_tail_data(linked_list *list) {
   return get_node_buffer(list->tail);
 }
 
-void *get_data_at(linked_list *list, size_t index) {
+void *get_data_at(const linked_list *list, const size_t index) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
     return NULL;
@@ -190,18 +198,18 @@ void *get_data_at(linked_list *list, size_t index) {
   return get_node_buffer(cur_node);
 }
 
-size_t get_data_size(linked_list *list) {
+size_t get_data_size(const linked_list *list) {
   return (list != NULL) ? list->data_size : 0;
 }
 
-size_t get_list_size(linked_list *list) {
+size_t get_list_size(const linked_list *list) {
   return (list != NULL) ? list->list_size : 0;
 }
 
 // I have to idea how to adjust the display function for bigger buffer sizes
 // This is by no means reliable since in ints, they will result in uninitialised
 // values
-void display_linked_list(linked_list *list) {
+void display_linked_list(const linked_list *list) {
   if (list == NULL) {
     ERROR_PRINT("Provided NULL to list argument");
     return;
